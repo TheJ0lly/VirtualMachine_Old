@@ -38,6 +38,10 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int size, int6
     instance->ip = 0;
 
     while (!instance->halt) {
+        if (instance->ip > size) {
+            return ERR_INVALID_MEMORY_ACCESS;
+        }
+
         Error err = vm_execute_instruction(instance, instructions[instance->ip], out);
         if (err != ERR_OK) {
             return err;
@@ -121,6 +125,25 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         instance->size--;
         instance->ip++;
         return ERR_OK;
+    
+    case LOAD:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
+
+        *instruction.reg = instance->stack[instance->size-1];
+        instance->size--;
+        instance->ip++;
+        return ERR_OK;
+
+    case UNLOAD:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
+        
+        instance->stack[instance->size++] = *instruction.reg;
+        instance->ip++;
+        return ERR_OK;
 
     case JUMP:
         if (instance->size == 0) {
@@ -132,6 +155,23 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         }
 
         instance->ip = instruction.value;
+        return ERR_OK;
+    
+    case JUMPEQ:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
+
+        if (instruction.value < 0 || instruction.value > instance->size) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->stack[instance->size-1] == *instruction.reg) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
         return ERR_OK;
 
     default:
@@ -149,6 +189,8 @@ const char *error_as_string(Error err) {
         return "ERR_STACK_EMPTY";
     case ERR_PROGRAM_WITHOUT_HALT:
         return "ERR_PROGRAM_WITHOUT_HALT";
+    case ERR_INVALID_JUMP_ADDRESS:
+        return "ERR_INVALID_JUMP_ADDRESS";
     default:
         return "ERR_UNKNOWN_OPERATION";
     }
@@ -163,6 +205,14 @@ void vm_dump_stack(VM *instance, FILE *stream) {
             printf("   %ld\n", instance->stack[i]);
         }
     }
+}
+
+void vm_dump_registers(VM *instance, FILE *stream) {
+    printf("Registers:\n");
+
+    printf("   RA: %ld\n", instance->registers.RA);
+    printf("   RB: %ld\n", instance->registers.RB);
+    printf("   RC: %ld\n", instance->registers.RC);
 }
 
 
