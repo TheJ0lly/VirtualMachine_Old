@@ -42,8 +42,6 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int size, int6
         if (err != ERR_OK) {
             return err;
         }
-
-        instance->ip++;
     }
 
     return ERR_OK;
@@ -59,6 +57,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         }
 
         instance->stack[instance->size++] = instruction.value;
+        instance->ip++;
         return ERR_OK;
 
     case PEEK:
@@ -69,14 +68,15 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         if (out != NULL) {
             *out = instance->stack[instance->size-1];
         }
+        instance->ip++;
         return ERR_OK;
     
     case POP:
         if (instance->size == 0) {
             return ERR_STACK_EMPTY;
         }
-
         instance->size--;
+        instance->ip++;
         return ERR_OK;
 
     case HALT:
@@ -90,6 +90,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
 
         instance->stack[instance->size-2] += instance->stack[instance->size-1];
         instance->size--;
+        instance->ip++;
         return ERR_OK;
 
     case MINUS:
@@ -108,6 +109,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
 
         instance->stack[instance->size-2] /= instance->stack[instance->size-1];
         instance->size--;
+        instance->ip++;
         return ERR_OK;
 
     case MULT:
@@ -117,9 +119,20 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
 
         instance->stack[instance->size-2] *= instance->stack[instance->size-1];
         instance->size--;
+        instance->ip++;
         return ERR_OK;
 
+    case JUMP:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
 
+        if (instruction.value < 0 || instruction.value > instance->size) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        instance->ip = instruction.value;
+        return ERR_OK;
 
     default:
         return ERR_UNKNOWN_OPERATION;
@@ -141,7 +154,7 @@ const char *error_as_string(Error err) {
     }
 }
 
-void vm_stack_dump(VM *instance, FILE *stream) {
+void vm_dump_stack(VM *instance, FILE *stream) {
     printf("Stack:\n");
     if (instance->size == 0) {
         printf("   [empty]\n");

@@ -16,6 +16,7 @@
 #define DIV_INSTRUCTION {.op=DIV}
 #define MULT_INSTRUCTION {.op=MULT}
 #define HALT_INSTRUCTION {.op=HALT}
+#define JUMP_INSTRUCTION(x) {.op=JUMP, .value=(x)}
 
 #define PROGRAM_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -28,6 +29,7 @@ typedef enum {
     MINUS,
     DIV,
     MULT,
+    JUMP,
 } Operation;
 
 typedef enum {
@@ -37,6 +39,7 @@ typedef enum {
     ERR_STACK_EMPTY,
     ERR_PROGRAM_WITHOUT_HALT,
     ERR_UNKNOWN_OPERATION,
+    ERR_INVALID_JUMP_ADDRESS,
 } Error;
 
 typedef struct Instruction {
@@ -59,7 +62,7 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int size, int6
 Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out);
 const char *error_as_string(Error err);
 
-void vm_stack_dump(VM *instance, FILE *stream);
+void vm_dump_stack(VM *instance, FILE *stream);
 
 
 #endif //STACK_H_

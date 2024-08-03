@@ -3,15 +3,11 @@
 #include "../include/vm.h"
 
 Instruction program[] = {
-    PUSH_INSTRUCTION(2),
-    PUSH_INSTRUCTION(3),
-    PUSH_INSTRUCTION(4),
-    PLUS_INSTRUCTION,
-    MULT_INSTRUCTION,
-    PUSH_INSTRUCTION(7),
-    DIV_INSTRUCTION,
-    PEEK_INSTRUCTION,
-    HALT_INSTRUCTION,
+    PUSH_INSTRUCTION(0), //0
+    PUSH_INSTRUCTION(1), //1
+    PLUS_INSTRUCTION,    //2
+    JUMP_INSTRUCTION(1), //3
+    HALT_INSTRUCTION,    //4
 };
 
 int main() {
