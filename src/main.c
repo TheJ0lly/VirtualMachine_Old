@@ -13,11 +13,13 @@ int main() {
         PLUS_INST,                         //2
         LOAD_INST(&vm.registers.RA),       //3
         PUSH_INST(5),                      //4
-        JUMPEQ_INST(1, &vm.registers.RA),  //5
+        JUMPEQ_INST(9, &vm.registers.RA),  //5
         UNLOAD_INST(&vm.registers.RA),     //6
         PLUS_INST,                         //7
-        PEEK_INST,                         //8
-        HALT_INST,                         //9
+        HALT_INST,                         //8
+        PUSH_INST(5),                      //9
+        PLUS_INST,                         //10
+        LOAD_INST(&vm.registers.RA),       //11
     };
 
 

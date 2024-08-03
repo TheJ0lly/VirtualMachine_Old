@@ -46,8 +46,8 @@ typedef enum {
     ERR_STACK_EMPTY,
     ERR_PROGRAM_WITHOUT_HALT,
     ERR_INVALID_JUMP_ADDRESS,
-    ERR_UNKNOWN_OPERATION,
     ERR_INVALID_MEMORY_ACCESS,
+    ERR_UNKNOWN_OPERATION,
 } Error;
 
 // Instruction is a struct that holds the data needed to perform an instruction on the VM.

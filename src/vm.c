@@ -38,7 +38,7 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int size, int6
     instance->ip = 0;
 
     while (!instance->halt) {
-        if (instance->ip > size) {
+        if (instance->ip >= size) {
             return ERR_INVALID_MEMORY_ACCESS;
         }
 
@@ -150,7 +150,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
             return ERR_STACK_EMPTY;
         }
 
-        if (instruction.value < 0 || instruction.value > instance->size) {
+        if (instruction.value < 0 || instruction.value > instance->cap) {
             return ERR_INVALID_JUMP_ADDRESS;
         }
 
@@ -162,7 +162,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
             return ERR_STACK_EMPTY;
         }
 
-        if (instruction.value < 0 || instruction.value > instance->size) {
+        if (instruction.value < 0 || instruction.value > instance->cap) {
             return ERR_INVALID_JUMP_ADDRESS;
         }
 
@@ -191,6 +191,8 @@ const char *error_as_string(Error err) {
         return "ERR_PROGRAM_WITHOUT_HALT";
     case ERR_INVALID_JUMP_ADDRESS:
         return "ERR_INVALID_JUMP_ADDRESS";
+    case ERR_INVALID_MEMORY_ACCESS:
+        return "ERR_INVALID_MEMORY_ACCESS";
     default:
         return "ERR_UNKNOWN_OPERATION";
     }
