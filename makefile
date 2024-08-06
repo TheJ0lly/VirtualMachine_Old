@@ -7,4 +7,4 @@ build:
 	gcc -o bin/vm src/*.c -Wall -Werror -pedantic -std=c11
 
 run: build
-	./bin/vm
+	./bin/vm && rm ./bin/vm
