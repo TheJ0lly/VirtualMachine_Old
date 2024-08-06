@@ -18,32 +18,15 @@ void vm_free_memory(VM *instance) {
     free(instance->stack);
 }
 
-static Error ensure_program_halt(Instruction *instructions, int size) {
-    for (int i = 0; i < size; i++) {
-        if (instructions[i].op == HALT) {
-            return ERR_OK;
-        }
-    }
-
-    return ERR_PROGRAM_WITHOUT_HALT;
-}
-
-Error vm_execute_program(VM *instance, Instruction *instructions, int size, int64_t *out) {
-    Error err = ensure_program_halt(instructions, size);
-
-    if (err != ERR_OK) {
-        return err;
-    }
-
+Error vm_execute_program(VM *instance, Instruction *instructions, int64_t *out) {
     instance->ip = 0;
 
     while (!instance->halt) {
-        if (instance->ip >= size) {
-            return ERR_INVALID_MEMORY_ACCESS;
-        }
-
         Error err = vm_execute_instruction(instance, instructions[instance->ip], out);
         if (err != ERR_OK) {
+            #ifdef DEBUG
+                printf("INSTRUCTION: %s\n", operation_as_string(instructions[instance->ip].op));
+            #endif
             return err;
         }
     }
@@ -64,6 +47,11 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         instance->ip++;
         return ERR_OK;
 
+    case MOVE:
+        *instruction.primary_reg = instruction.value;
+        instance->ip++;
+        return ERR_OK;
+
     case PEEK:
         if (instance->size == 0) {
             return ERR_STACK_EMPTY;
@@ -76,7 +64,7 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         return ERR_OK;
 
     case RETURN:
-        *out = *instruction.reg;
+        *out = *instruction.primary_reg;
         instance->ip++;
         return ERR_OK;
     
@@ -98,6 +86,16 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         }
 
         instance->stack[instance->size-2] += instance->stack[instance->size-1];
+        instance->size--;
+        instance->ip++;
+        return ERR_OK;
+
+    case APPEND:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
+
+        *instruction.primary_reg += instance->stack[instance->size-1];
         instance->size--;
         instance->ip++;
         return ERR_OK;
@@ -136,17 +134,47 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
             return ERR_STACK_EMPTY;
         }
 
-        *instruction.reg = instance->stack[instance->size-1];
+        *instruction.primary_reg = instance->stack[instance->size-1];
         instance->size--;
         instance->ip++;
         return ERR_OK;
 
     case UNLOAD:
-        if (instance->size == 0) {
-            return ERR_STACK_EMPTY;
+        instance->stack[instance->size++] = *instruction.primary_reg;
+        instance->ip++;
+        return ERR_OK;
+
+    case CMP:
+        if (*instruction.primary_reg > *instruction.secondary_reg) {
+            instance->registers.compare_flag = -1;
+            goto return_from_cmp;
         }
         
-        instance->stack[instance->size++] = *instruction.reg;
+        if (*instruction.primary_reg < *instruction.secondary_reg) {
+            instance->registers.compare_flag = 1;
+            goto return_from_cmp;
+        }
+
+        instance->registers.compare_flag = 0;
+        
+        return_from_cmp:
+        instance->ip++;
+        return ERR_OK;
+
+    case CMP_VAL:
+        if (*instruction.primary_reg > instruction.value) {
+            instance->registers.compare_flag = -1;
+            goto return_from_cmp_val;
+        }
+        
+        if (*instruction.primary_reg < instruction.value) {
+            instance->registers.compare_flag = 1;
+            goto return_from_cmp_val;
+        }
+
+        instance->registers.compare_flag = 0;
+        
+        return_from_cmp_val:
         instance->ip++;
         return ERR_OK;
 
@@ -162,16 +190,25 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         instance->ip = instruction.value;
         return ERR_OK;
     
-    case JUMPEQ:
-        if (instance->size == 0) {
-            return ERR_STACK_EMPTY;
-        }
-
+    case JEQ:
         if (instruction.value < 0 || instruction.value > instance->cap) {
             return ERR_INVALID_JUMP_ADDRESS;
         }
 
-        if (instance->stack[instance->size-1] == *instruction.reg) {
+        if (instance->registers.compare_flag == 0) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
+        return ERR_OK;
+    
+    case JNE:
+        if (instruction.value < 0 || instruction.value > instance->cap) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->registers.compare_flag != 0) {
             instance->ip = instruction.value;
         } else {
             instance->ip++;
@@ -192,16 +229,74 @@ const char *error_as_string(Error err) {
         return "ERR_STACK_UNDERFLOW";
     case ERR_STACK_EMPTY:
         return "ERR_STACK_EMPTY";
-    case ERR_PROGRAM_WITHOUT_HALT:
-        return "ERR_PROGRAM_WITHOUT_HALT";
     case ERR_INVALID_JUMP_ADDRESS:
         return "ERR_INVALID_JUMP_ADDRESS";
-    case ERR_INVALID_MEMORY_ACCESS:
-        return "ERR_INVALID_MEMORY_ACCESS";
     default:
         return "ERR_UNKNOWN_OPERATION";
     }
 }
+
+const char *operation_as_string(Operation op) {
+    switch (op)
+    {
+    case PUSH:
+        return "PUSH";
+
+    case MOVE:
+        return "MOVE";
+
+    case PEEK:
+        return "PEEK";
+
+    case RETURN:
+        return "RETURN";
+    case POP:
+        return "POP";
+
+    case HALT:
+        return "HALT";
+
+    case PLUS:
+        return "PLUS";
+
+    case APPEND:
+        return "APPEND";
+
+    case MINUS:
+        return "MINUS";
+    
+    case DIV:
+        return "DIV";
+
+    case MULT:
+        return "MULT";
+    
+    case LOAD:
+        return "LOAD";
+
+    case UNLOAD:
+        return "UNLOAD";
+
+    case CMP:
+        return "CMP";
+
+    case CMP_VAL:
+        return "CMP_VAL";
+
+    case JUMP:
+        return "JUMP";
+    
+    case JEQ:
+        return "JEQ";
+
+    case JNE:
+        return "JNE";
+
+    default:
+        return "UNKNOWN_OPERATION";
+    }
+}
+
 
 void vm_dump_stack(VM *instance, FILE *stream) {
     printf("Stack:\n");
