@@ -100,6 +100,11 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         instance->ip++;
         return ERR_OK;
 
+    case APPEND_VAL:
+        *instruction.primary_reg += instruction.value;
+        instance->ip++;
+        return ERR_OK;
+
     case MINUS:
         if (instance->size < 2) {
             return ERR_STACK_UNDERFLOW;
@@ -261,6 +266,9 @@ const char *operation_as_string(Operation op) {
 
     case APPEND:
         return "APPEND";
+
+    case APPEND_VAL:
+        return "APPEND_VAL";
 
     case MINUS:
         return "MINUS";

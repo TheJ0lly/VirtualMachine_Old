@@ -7,27 +7,65 @@
 #include <stdbool.h>
 
 #define TEST_STACK_SIZE 1024
+#define DEBUG
 
+
+//PUSH_INST pushses the specified value on top of the memory stack.
 #define PUSH_INST(x) {.op=PUSH, .value=(x)}
-#define MOVE_INST(x, addr) {.op=MOVE, .value=(x), .primary_reg=(addr)}
-#define PEEK_INST {.op=PEEK}
-#define RETURN_INST(addr) {.op=RETURN, .primary_reg=(addr)}
-#define POP_INST {.op=POP}
-#define PLUS_INST {.op=PLUS}
-#define APPEND_INST(addr) {.op=APPEND, .primary_reg=(addr)}
-#define MINUS_INST {.op=MINUS}
-#define DIV_INST {.op=DIV}
-#define MULT_INST {.op=MULT}
-#define HALT_INST {.op=HALT}
-#define LOAD_INST(addr) {.op=LOAD, .primary_reg=(addr)}
-#define UNLOAD_INST(addr) {.op=UNLOAD, .primary_reg=(addr)}
-#define CMP(addr1, addr2) {.op=CMP, .primary_reg=(addr1), .secondary_reg=(addr2)}
-#define CMP_VAL(x, addr) {.op=CMP_VAL, .value=(x), .primary_reg=(addr)}
-#define JUMP_INST(x) {.op=JUMP, .value=(x)}
-#define JEQ_INST(x) {.op=JEQ, .value=(x)}
-#define JNE_INST(x) {.op=JNE, .value=(x)}
 
-#define PROGRAM_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+//MOVE_INST put the value x into the register with the address of addr.
+#define MOVE_INST(x, addr) {.op=MOVE, .value=(x), .primary_reg=(addr)}
+
+//PEEK_INST will store the value on top of the stack inside the out pointer passed into the vm_execute_program.
+#define PEEK_INST {.op=PEEK}
+
+//RETURN_INST will store the value from a register inside the out pointer passed into the vm_execute_program.
+#define RETURN_INST(addr) {.op=RETURN, .primary_reg=(addr)}
+
+//POP_INST will pop the element on top of the stack.
+#define POP_INST {.op=POP}
+
+//PLUS_INST will perform the plus operation between the last 2 elements on the stack.
+#define PLUS_INST {.op=PLUS}
+
+//APPEND_INST will add the value on top of the stack into a register.
+#define APPEND_INST(addr) {.op=APPEND, .primary_reg=(addr)}
+
+//APPEND_VAL_INST will add the value x into a register.
+#define APPEND_VAL_INST(x, addr) {.op=APPEND_VAL, .value=(x), .primary_reg=(addr)}
+
+//MINUS_INST will perform the minus operation between the last 2 elements on the stack.
+#define MINUS_INST {.op=MINUS}
+
+//DIV_INST will perform the division operation between the last 2 elements on the stack.
+#define DIV_INST {.op=DIV}
+
+//MULT_INST will perform the multiplication operation between the last 2 elements on the stack.
+#define MULT_INST {.op=MULT}
+
+//HALT_INST will stop the execution of the VM.
+#define HALT_INST {.op=HALT}
+
+//LOAD_INST will put the value on top of the stack into a register.
+#define LOAD_INST(addr) {.op=LOAD, .primary_reg=(addr)}
+
+//UNLOAD_INST will put the value from a register on top of the stack.
+#define UNLOAD_INST(addr) {.op=UNLOAD, .primary_reg=(addr)}
+
+//CMP compares the values of 2 registers and then sets the compare_flag register to either -1, 0, 1.
+#define CMP(addr1, addr2) {.op=CMP, .primary_reg=(addr1), .secondary_reg=(addr2)}
+
+//CMP_VAL compares the values of a register and a arbitrary value then sets the compare_flag register to either -1, 0, 1.
+#define CMP_VAL(x, addr) {.op=CMP_VAL, .value=(x), .primary_reg=(addr)}
+
+//JUMP_INST will jump to an instruction in the program.
+#define JUMP_INST(x) {.op=JUMP, .value=(x)}
+
+//JEQ_INST will jump to an instruction in the program if the compare_flag register is 0.
+#define JEQ_INST(x) {.op=JEQ, .value=(x)}
+
+//JNE_INST will jump to an instruction in the program if the compare_flag register is not 0.
+#define JNE_INST(x) {.op=JNE, .value=(x)}
 
 
 typedef enum {
@@ -39,6 +77,7 @@ typedef enum {
     HALT,
     PLUS,
     APPEND,
+    APPEND_VAL,
     MINUS,
     DIV,
     MULT,

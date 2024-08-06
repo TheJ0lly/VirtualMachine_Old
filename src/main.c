@@ -2,8 +2,6 @@
 
 #include "../include/vm.h"
 
-
-
 int main() {
     VM vm = vm_create_new(TEST_STACK_SIZE);
     Instruction program[] = {
@@ -14,9 +12,8 @@ int main() {
         UNLOAD_INST(&vm.registers.RB),
         LOAD_INST(&vm.registers.RA),
         APPEND_INST(&vm.registers.RB),
-        CMP_VAL(4, &vm.registers.RD),   // Change value here to make it loop a certain number of times. 0 <= - will be infinite.
-        PUSH_INST(1),
-        APPEND_INST(&vm.registers.RD),
+        CMP_VAL(5, &vm.registers.RD),   // Change value here to make it loop a certain number of times. 0 <= - will be infinite.
+        APPEND_VAL_INST(1, &vm.registers.RD),
         JNE_INST(3),
         RETURN_INST(&vm.registers.RB),
         HALT_INST,
