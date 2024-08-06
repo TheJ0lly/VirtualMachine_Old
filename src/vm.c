@@ -74,6 +74,11 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         }
         instance->ip++;
         return ERR_OK;
+
+    case RETURN:
+        *out = *instruction.reg;
+        instance->ip++;
+        return ERR_OK;
     
     case POP:
         if (instance->size == 0) {

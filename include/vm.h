@@ -10,6 +10,7 @@
 
 #define PUSH_INST(x) {.op=PUSH, .value=(x)}
 #define PEEK_INST {.op=PEEK}
+#define RETURN_INST(addr) {.op=RETURN, .reg=(addr)}
 #define POP_INST {.op=POP}
 #define PLUS_INST {.op=PLUS}
 #define MINUS_INST {.op=MINUS}
@@ -27,6 +28,7 @@
 typedef enum {
     PUSH = 0,
     PEEK,
+    RETURN,
     POP,
     HALT,
     PLUS,
