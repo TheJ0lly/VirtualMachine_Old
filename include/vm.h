@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "../include/errors.h"
+
 #define TEST_STACK_SIZE 1024
 #define DEBUG
 
@@ -126,15 +128,6 @@ typedef enum {
     JLS,
 } Operation;
 
-typedef enum {
-    ERR_OK = 0,
-    ERR_STACK_OVERFLOW,
-    ERR_STACK_UNDERFLOW,
-    ERR_STACK_EMPTY,
-    ERR_INVALID_JUMP_ADDRESS,
-    ERR_INVALID_MEMORY_ACCESS,
-    ERR_UNKNOWN_OPERATION,
-} Error;
 
 // Instruction is a struct that holds the data needed to perform an instruction on the VM.
 typedef struct Instruction {
@@ -207,7 +200,6 @@ size:         the size of the program to be run. This is mostly to check for the
 */
 Error vm_execute_program(VM *instance, Instruction *instructions, int64_t *out);
 Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out);
-const char *error_as_string(Error err);
 const char *operation_as_string(Operation op);
 
 Instruction *Fibonacci_Test(VM *vm, int iter);

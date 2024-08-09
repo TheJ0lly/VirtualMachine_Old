@@ -312,22 +312,6 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
     }
 }
 
-const char *error_as_string(Error err) {
-    switch (err) {
-    case ERR_STACK_OVERFLOW:
-        return "ERR_STACK_OVERFLOW";
-    case ERR_STACK_UNDERFLOW:
-        return "ERR_STACK_UNDERFLOW";
-    case ERR_STACK_EMPTY:
-        return "ERR_STACK_EMPTY";
-    case ERR_INVALID_JUMP_ADDRESS:
-        return "ERR_INVALID_JUMP_ADDRESS";
-    case ERR_OK:
-        return "ERR_OK";
-    default:
-        return "ERR_UNKNOWN_OPERATION";
-    }
-}
 
 const char *operation_as_string(Operation op) {
     switch (op)
