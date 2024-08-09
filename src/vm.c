@@ -24,9 +24,6 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int64_t *out) 
     while (!instance->halt) {
         Error err = vm_execute_instruction(instance, instructions[instance->ip], out);
         if (err != ERR_OK) {
-            #ifdef DEBUG
-                printf("INSTRUCTION: %s\n", operation_as_string(instructions[instance->ip].op));
-            #endif
             return err;
         }
     }
@@ -113,6 +110,21 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
         instance->stack[instance->size-2] -= instance->stack[instance->size-1];
         instance->size--;
         return ERR_OK;
+
+    case DECREMENT:
+        if (instance->size == 0) {
+            return ERR_STACK_EMPTY;
+        }
+
+        *instruction.primary_reg -= instance->stack[instance->size-1];
+        instance->size--;
+        instance->ip++;
+        return ERR_OK;
+
+    case DECREMENT_VAL:
+        *instruction.primary_reg -= instruction.value;
+        instance->ip++;
+        return ERR_OK;
     
     case DIV:
         if (instance->size < 2) {
@@ -168,12 +180,12 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
 
     case CMP_VAL:
         if (*instruction.primary_reg > instruction.value) {
-            instance->registers.compare_flag = -1;
+            instance->registers.compare_flag = 1;
             goto return_from_cmp_val;
         }
         
         if (*instruction.primary_reg < instruction.value) {
-            instance->registers.compare_flag = 1;
+            instance->registers.compare_flag = -1;
             goto return_from_cmp_val;
         }
 
@@ -351,6 +363,18 @@ const char *operation_as_string(Operation op) {
 
     case JNE:
         return "JNE";
+
+    case JGE:
+        return "JGE";
+    
+    case JGR:
+        return "JGR";
+    
+    case JLE:
+        return "JLE";
+
+    case JLS:
+        return "JLS";
 
     default:
         return "UNKNOWN_OPERATION";

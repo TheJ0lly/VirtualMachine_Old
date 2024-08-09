@@ -37,6 +37,12 @@
 //MINUS_INST will perform the minus operation between the last 2 elements on the stack.
 #define MINUS_INST {.op=MINUS}
 
+//DECREMENT_INST will decrease the value from a register by the last value on top of the stack.
+#define DECREMENT_INST(addr) {.op=DECREMENT, .primary_reg=(addr)}
+
+//DECREMENT_INST will decrease the value from a register by x.
+#define DECREMENT_VAL_INST(x, addr) {.op=DECREMENT_VAL, .value=(x), .primary_reg=(addr)}
+
 //DIV_INST will perform the division operation between the last 2 elements on the stack.
 #define DIV_INST {.op=DIV}
 
@@ -91,6 +97,8 @@ typedef enum {
     APPEND,
     APPEND_VAL,
     MINUS,
+    DECREMENT,
+    DECREMENT_VAL,
     DIV,
     MULT,
     LOAD,

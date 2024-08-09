@@ -6,7 +6,14 @@
 int main() {
     VM vm = vm_create_new(TEST_STACK_SIZE);
     
-    void *Program = Fibonacci_Test(&vm, 5);
+    Instruction Program[] = {
+        MOVE_INST(11, &vm.registers.RA),
+        DECREMENT_VAL_INST(1, &vm.registers.RA),
+        CMP_VAL(10, &vm.registers.RA),
+        JGE_INST(1),
+        RETURN_INST(&vm.registers.RA),
+        HALT_INST,
+    };
 
     int64_t out = 0;
     Error err = vm_execute_program(&vm, Program, &out);
