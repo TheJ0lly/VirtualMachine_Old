@@ -9,6 +9,7 @@ int main() {
     Instruction Program[] = {
         MOVE_INST(11, &vm.registers.RA),
         DECREMENT_VAL_INST(1, &vm.registers.RA),
+        LABEL_INST(LOOP),
         CMP_VAL(10, &vm.registers.RA),
         JGE_INST(1),
         RETURN_INST(&vm.registers.RA),

@@ -10,6 +10,8 @@
 #define DEBUG
 
 
+#define LABEL_INST(name) {.op=LABEL}
+
 //PUSH_INST pushses the specified value on top of the memory stack.
 #define PUSH_INST(x) {.op=PUSH, .value=(x)}
 
@@ -87,7 +89,8 @@
 
 
 typedef enum {
-    PUSH = 0,
+    LABEL = 0,
+    PUSH,
     MOVE,
     PEEK,
     RETURN,
