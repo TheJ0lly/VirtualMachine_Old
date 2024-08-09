@@ -89,6 +89,7 @@
 
 
 typedef enum {
+    //Stack manipulation
     LABEL = 0,
     PUSH,
     MOVE,
@@ -96,6 +97,8 @@ typedef enum {
     RETURN,
     POP,
     HALT,
+
+    //Math operations
     PLUS,
     APPEND,
     APPEND_VAL,
@@ -104,10 +107,16 @@ typedef enum {
     DECREMENT_VAL,
     DIV,
     MULT,
+    
+    //Register handling
     LOAD,
     UNLOAD,
+
+    //Compares
     CMP,
     CMP_VAL,
+
+    // Jumps
     JUMP,
     JEQ,
     JNE,
