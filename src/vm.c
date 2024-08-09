@@ -221,6 +221,58 @@ Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out
 
         return ERR_OK;
 
+    case JGR:
+        if (instruction.value < 0 || instruction.value > instance->cap) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->registers.compare_flag == 1) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
+        return ERR_OK;
+
+    case JGE:
+        if (instruction.value < 0 || instruction.value > instance->cap) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->registers.compare_flag >= 0) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
+        return ERR_OK;
+
+    case JLE:
+        if (instruction.value < 0 || instruction.value > instance->cap) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->registers.compare_flag <= 0) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
+        return ERR_OK;
+
+    case JLS:
+        if (instruction.value < 0 || instruction.value > instance->cap) {
+            return ERR_INVALID_JUMP_ADDRESS;
+        }
+
+        if (instance->registers.compare_flag == -1) {
+            instance->ip = instruction.value;
+        } else {
+            instance->ip++;
+        }
+
+        return ERR_OK;
+
     default:
         return ERR_UNKNOWN_OPERATION;
     }
@@ -326,3 +378,22 @@ void vm_dump_registers(VM *instance, FILE *stream) {
 }
 
 
+Instruction *Fibonacci_Test(VM *vm, int iter) {
+
+    Instruction *Fibonacci = malloc(sizeof(Instruction) * 12);
+
+    Fibonacci[0] = (Instruction)MOVE_INST(0, &vm->registers.RA);
+    Fibonacci[1] = (Instruction)MOVE_INST(1, &vm->registers.RB);
+    Fibonacci[2] = (Instruction)MOVE_INST(1, &vm->registers.RD);
+    Fibonacci[3] = (Instruction)UNLOAD_INST(&vm->registers.RA);
+    Fibonacci[4] = (Instruction)UNLOAD_INST(&vm->registers.RB);
+    Fibonacci[5] = (Instruction)LOAD_INST(&vm->registers.RA);
+    Fibonacci[6] = (Instruction)APPEND_INST(&vm->registers.RB);
+    Fibonacci[7] = (Instruction)CMP_VAL(5, &vm->registers.RD);   // Change value here to make it loop a certain number of times. 0 <= - will be infinite.
+    Fibonacci[8] = (Instruction)APPEND_VAL_INST(1, &vm->registers.RD);
+    Fibonacci[9] = (Instruction)JNE_INST(3);
+    Fibonacci[10] = (Instruction)RETURN_INST(&vm->registers.RB);
+    Fibonacci[11] = (Instruction)HALT_INST;
+
+    return Fibonacci;
+}

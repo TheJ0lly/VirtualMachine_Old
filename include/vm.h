@@ -67,6 +67,18 @@
 //JNE_INST will jump to an instruction in the program if the compare_flag register is not 0.
 #define JNE_INST(x) {.op=JNE, .value=(x)}
 
+//JGR_INST will jump to an instruction in the program if the compare_flag register is 1.
+#define JGR_INST(x) {.op=JGR, .value=(x)}
+
+//JNE_INST will jump to an instruction in the program if the compare_flag register is 0 or 1.
+#define JGE_INST(x) {.op=JGE, .value=(x)}
+
+//JNE_INST will jump to an instruction in the program if the compare_flag register is 0 or -1.
+#define JLE_INST(x) {.op=JLE, .value=(x)}
+
+//JNE_INST will jump to an instruction in the program if the compare_flag register is -1.
+#define JLS_INST(x) {.op=JLS, .value=(x)}
+
 
 typedef enum {
     PUSH = 0,
@@ -88,6 +100,10 @@ typedef enum {
     JUMP,
     JEQ,
     JNE,
+    JGR,
+    JGE,
+    JLE,
+    JLS,
 } Operation;
 
 typedef enum {
@@ -169,6 +185,8 @@ Error vm_execute_program(VM *instance, Instruction *instructions, int64_t *out);
 Error vm_execute_instruction(VM *instance, Instruction instruction, int64_t *out);
 const char *error_as_string(Error err);
 const char *operation_as_string(Operation op);
+
+Instruction *Fibonacci_Test(VM *vm, int iter);
 
 void vm_dump_stack(VM *instance, FILE *stream);
 void vm_dump_registers(VM *instance, FILE *stream);

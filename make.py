@@ -1,7 +1,7 @@
 import sys, os
 
 def build():
-    os.system("gcc -o bin/vm src/*.c -Wall -Werror -pedantic -std=c11")
+    os.system("gcc -o bin/vm src/*.c -Wall -Wswitch -Werror -pedantic -std=c11")
     print("\033[32mVM built successfully\033[00m")
 
 def run():
