@@ -24,7 +24,7 @@ void vm_free_memory(VM *instance) {
     instance->ip = 0;
     instance->size = 0;
     free(instance->stack);
-    
+
     free(instance->registers.RA);
     free(instance->registers.RB);
     free(instance->registers.RC);
@@ -322,6 +322,8 @@ const char *error_as_string(Error err) {
         return "ERR_STACK_EMPTY";
     case ERR_INVALID_JUMP_ADDRESS:
         return "ERR_INVALID_JUMP_ADDRESS";
+    case ERR_OK:
+        return "ERR_OK";
     default:
         return "ERR_UNKNOWN_OPERATION";
     }
@@ -421,6 +423,11 @@ void vm_dump_registers(VM *instance, FILE *stream) {
     printf("   RA: %ld\n", *instance->registers.RA);
     printf("   RB: %ld\n", *instance->registers.RB);
     printf("   RC: %ld\n", *instance->registers.RC);
+    printf("   RD: %ld\n", *instance->registers.RD);
+    printf("   RE: %d\n", *instance->registers.RE);
+    printf("   RF: %d\n", *instance->registers.RF);
+    printf("   RG: %d\n", *instance->registers.RG);
+    printf("   RH: %d\n", *instance->registers.RH);
 }
 
 
