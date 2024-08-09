@@ -145,6 +145,10 @@ typedef struct Registers {
     int64_t RB;
     int64_t RC;
     int64_t RD;
+    int32_t RE;
+    int32_t RF;
+    int32_t RG;
+    int32_t RH;
 
     //compare_flag can have three values:
     //-1 - The left operand is bigger.
