@@ -24,6 +24,16 @@ void vm_free_memory(VM *instance) {
     instance->ip = 0;
     instance->size = 0;
     free(instance->stack);
+    
+    free(instance->registers.RA);
+    free(instance->registers.RB);
+    free(instance->registers.RC);
+    free(instance->registers.RD);
+
+    free(instance->registers.RE);
+    free(instance->registers.RF);
+    free(instance->registers.RG);
+    free(instance->registers.RH);
 }
 
 Error vm_execute_program(VM *instance, Instruction *instructions, int64_t *out) {
