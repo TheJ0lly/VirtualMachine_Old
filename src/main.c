@@ -7,12 +7,12 @@ int main() {
     VM vm = vm_create_new(TEST_STACK_SIZE);
     
     Instruction Program[] = {
-        MOVE_INST(11, &vm.registers.RA),
-        DECREMENT_VAL_INST(1, &vm.registers.RA),
+        MOVE_INST(11, vm.registers.RA),
+        DECREMENT_VAL_INST(1, vm.registers.RA),
         LABEL_INST(LOOP),
-        CMP_VAL(10, &vm.registers.RA),
+        CMP_VAL(10, vm.registers.RA),
         JGE_INST(1),
-        RETURN_INST(&vm.registers.RA),
+        RETURN_INST(vm.registers.RA),
         HALT_INST,
     };
 

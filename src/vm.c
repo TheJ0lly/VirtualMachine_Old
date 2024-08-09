@@ -8,6 +8,14 @@ VM vm_create_new(size_t capacity) {
     vm.stack = (int64_t *)malloc(sizeof(int64_t) * capacity);
     vm.halt = false;
 
+    vm.registers.RA = malloc(sizeof(int64_t));
+    vm.registers.RB = malloc(sizeof(int64_t));
+    vm.registers.RC = malloc(sizeof(int64_t));
+    vm.registers.RD = malloc(sizeof(int64_t));    
+    vm.registers.RE = malloc(sizeof(int32_t));
+    vm.registers.RF = malloc(sizeof(int32_t));
+    vm.registers.RG = malloc(sizeof(int32_t));
+    vm.registers.RH = malloc(sizeof(int32_t));
     return vm;
 }
 
@@ -400,9 +408,9 @@ void vm_dump_stack(VM *instance, FILE *stream) {
 void vm_dump_registers(VM *instance, FILE *stream) {
     printf("Registers:\n");
 
-    printf("   RA: %ld\n", instance->registers.RA);
-    printf("   RB: %ld\n", instance->registers.RB);
-    printf("   RC: %ld\n", instance->registers.RC);
+    printf("   RA: %ld\n", *instance->registers.RA);
+    printf("   RB: %ld\n", *instance->registers.RB);
+    printf("   RC: %ld\n", *instance->registers.RC);
 }
 
 
@@ -410,18 +418,18 @@ Instruction *Fibonacci_Test(VM *vm, int iter) {
 
     Instruction *Fibonacci = malloc(sizeof(Instruction) * 13);
 
-    Fibonacci[0] = (Instruction)MOVE_INST(0, &vm->registers.RA);
-    Fibonacci[1] = (Instruction)MOVE_INST(1, &vm->registers.RB);
-    Fibonacci[2] = (Instruction)MOVE_INST(1, &vm->registers.RD);
+    Fibonacci[0] = (Instruction)MOVE_INST(0, vm->registers.RA);
+    Fibonacci[1] = (Instruction)MOVE_INST(1, vm->registers.RB);
+    Fibonacci[2] = (Instruction)MOVE_INST(1, vm->registers.RD);
     Fibonacci[3] = (Instruction)LABEL_INST(WHILE),
-    Fibonacci[4] = (Instruction)UNLOAD_INST(&vm->registers.RA);
-    Fibonacci[5] = (Instruction)UNLOAD_INST(&vm->registers.RB);
-    Fibonacci[6] = (Instruction)LOAD_INST(&vm->registers.RA);
-    Fibonacci[7] = (Instruction)APPEND_INST(&vm->registers.RB);
-    Fibonacci[8] = (Instruction)CMP_VAL(5, &vm->registers.RD);   // Change value here to make it loop a certain number of times. 0 <= - will be infinite.
-    Fibonacci[9] = (Instruction)APPEND_VAL_INST(1, &vm->registers.RD);
+    Fibonacci[4] = (Instruction)UNLOAD_INST(vm->registers.RA);
+    Fibonacci[5] = (Instruction)UNLOAD_INST(vm->registers.RB);
+    Fibonacci[6] = (Instruction)LOAD_INST(vm->registers.RA);
+    Fibonacci[7] = (Instruction)APPEND_INST(vm->registers.RB);
+    Fibonacci[8] = (Instruction)CMP_VAL(5, vm->registers.RD);   // Change value here to make it loop a certain number of times. 0 <= - will be infinite.
+    Fibonacci[9] = (Instruction)APPEND_VAL_INST(1, vm->registers.RD);
     Fibonacci[10] = (Instruction)JNE_INST(3);
-    Fibonacci[11] = (Instruction)RETURN_INST(&vm->registers.RB);
+    Fibonacci[11] = (Instruction)RETURN_INST(vm->registers.RB);
     Fibonacci[12] = (Instruction)HALT_INST;
 
     return Fibonacci;
