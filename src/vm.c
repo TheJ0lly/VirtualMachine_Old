@@ -12,10 +12,10 @@ VM vm_create_new(size_t capacity) {
     vm.registers.RB = malloc(sizeof(int64_t));
     vm.registers.RC = malloc(sizeof(int64_t));
     vm.registers.RD = malloc(sizeof(int64_t));    
-    vm.registers.RE = malloc(sizeof(int32_t));
-    vm.registers.RF = malloc(sizeof(int32_t));
-    vm.registers.RG = malloc(sizeof(int32_t));
-    vm.registers.RH = malloc(sizeof(int32_t));
+    vm.registers.RE = malloc(sizeof(int64_t));
+    vm.registers.RF = malloc(sizeof(int64_t));
+    vm.registers.RG = malloc(sizeof(int64_t));
+    vm.registers.RH = malloc(sizeof(int64_t));
     return vm;
 }
 
