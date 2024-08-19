@@ -408,10 +408,10 @@ void vm_dump_registers(VM *instance, FILE *stream) {
     printf("   RB: %ld\n", *instance->registers.RB);
     printf("   RC: %ld\n", *instance->registers.RC);
     printf("   RD: %ld\n", *instance->registers.RD);
-    printf("   RE: %d\n", *instance->registers.RE);
-    printf("   RF: %d\n", *instance->registers.RF);
-    printf("   RG: %d\n", *instance->registers.RG);
-    printf("   RH: %d\n", *instance->registers.RH);
+    printf("   RE: %ld\n", *instance->registers.RE);
+    printf("   RF: %ld\n", *instance->registers.RF);
+    printf("   RG: %ld\n", *instance->registers.RG);
+    printf("   RH: %ld\n", *instance->registers.RH);
 }
 
 
